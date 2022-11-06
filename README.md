@@ -1,3 +1,3 @@
 # Playground
 
-🎯 **Goal**: use of dotenv package + Express / MySql2.
+🎯 **Goal**: use of dotenv package + Express / MySql2 + JOI as validator.
