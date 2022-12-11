@@ -12,6 +12,7 @@ const welcome = (req, res) => {
 };
 
 const { validateMovie } = require("./validators.js");
+const { hashPassword } = require("./auth.js");
 
 app.get("/", welcome);
 
@@ -25,9 +26,13 @@ app.get("/api/movies/:id", movieHandlers.getMovieById);
 app.get("/api/users", userHandlers.getUsers);
 app.get("/api/users/:id", userHandlers.getOneUser);
 app.post("/api/movies", validateJoiMovie, movieHandlers.postMovie);
-app.post("/api/users", validateJoiUser, userHandlers.postUser);
-app.put("/api/movies/:id", validateJoiMovie, movieHandlers.putMovie);
-app.put("/api/users/:id", validateJoiUser, userHandlers.putUser);
+app.post("/api/users", validateJoiUser, hashPassword, userHandlers.postUser);
+
+// app.put("/api/movies/:id", validateJoiMovie, movieHandlers.putMovie);
+
+//Méthode PUT (movies)
+app.put("/api/movies/:id", movieHandlers.putMovie);
+app.put("/api/users/:id", validateJoiUser, hashPassword, userHandlers.putUser);
 app.delete("/api/movies/:id", movieHandlers.deleteMovie);
 app.delete("/api/users/:id", userHandlers.deleteUser);
 
