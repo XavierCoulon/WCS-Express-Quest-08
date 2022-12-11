@@ -12,29 +12,54 @@ const welcome = (req, res) => {
 };
 
 const { validateMovie } = require("./validators.js");
-const { hashPassword } = require("./auth.js");
-
-app.get("/", welcome);
+const {
+  hashPassword,
+  verifyPassword,
+  verifyToken,
+  verifyUserId,
+} = require("./auth.js");
 
 const movieHandlers = require("./movieHandlers");
 const userHandlers = require("./userHandlers");
 const { validateJoiMovie } = require("./validatorsJoij.js");
 const { validateJoiUser } = require("./validatorsJoij.js");
 
+// Public Routes
+
+app.get("/", welcome);
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
 app.get("/api/users", userHandlers.getUsers);
 app.get("/api/users/:id", userHandlers.getOneUser);
-app.post("/api/movies", validateJoiMovie, movieHandlers.postMovie);
 app.post("/api/users", validateJoiUser, hashPassword, userHandlers.postUser);
 
-// app.put("/api/movies/:id", validateJoiMovie, movieHandlers.putMovie);
+// Public - Login
+app.post(
+  "/api/login",
+  userHandlers.getUserByEmailWithPasswordAndPassToNext,
+  verifyPassword
+);
 
-//Méthode PUT (movies)
+// Authentification wall
+
+app.use(verifyToken);
+
+// Protected Routes
+
+app.post("/api/movies", validateJoiMovie, movieHandlers.postMovie);
 app.put("/api/movies/:id", movieHandlers.putMovie);
-app.put("/api/users/:id", validateJoiUser, hashPassword, userHandlers.putUser);
 app.delete("/api/movies/:id", movieHandlers.deleteMovie);
-app.delete("/api/users/:id", userHandlers.deleteUser);
+
+//Check id user to enable (verifyUserId)
+
+app.put(
+  "/api/users/:id",
+  validateJoiUser,
+  verifyUserId,
+  hashPassword,
+  userHandlers.putUser
+);
+app.delete("/api/users/:id", verifyUserId, userHandlers.deleteUser);
 
 app.listen(port, (err) => {
   if (err) {
