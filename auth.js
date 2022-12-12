@@ -63,12 +63,9 @@ const verifyToken = (req, res, next) => {
 //Check for method put and delete on users
 
 const verifyUserId = (req, res, next) => {
+  const id = parseInt(req.params.id);
   try {
-    const authorizationHeader = req.get("Authorization");
-    const token = authorizationHeader.split(" ")[1];
-    const id = parseInt(req.params.id);
-
-    if (id !== jwt.decode(token).sub) {
+    if (id !== req.payload.sub) {
       throw new Error("User not authorized for this action...");
     }
 

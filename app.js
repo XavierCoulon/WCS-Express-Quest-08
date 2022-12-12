@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 
 const app = express();
 
@@ -23,6 +24,22 @@ const movieHandlers = require("./movieHandlers");
 const userHandlers = require("./userHandlers");
 const { validateJoiMovie } = require("./validatorsJoij.js");
 const { validateJoiUser } = require("./validatorsJoij.js");
+
+const Session = require("express-session");
+const FileStore = require("session-file-store")(Session);
+
+app.use(
+  Session({
+    store: new FileStore({
+      path: path.join(__dirname, "/tmp"),
+      encrypt: true,
+    }),
+    secret: "Super Secret !",
+    resave: true,
+    saveUninitialized: true,
+    name: "sessionId",
+  })
+);
 
 // Public Routes
 
